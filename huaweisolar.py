@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import time
 import huawei_solar
@@ -23,6 +24,11 @@ vars_immediate_default = ['pv_01_voltage', 'pv_01_current', 'pv_02_voltage', 'pv
                           'grid_current', 'active_power', 'grid_A_voltage', 'active_grid_A_current', 'power_meter_active_power', 'storage_unit_1_total_charge']
 
 
+def get_day_start():
+    now = datetime.now()
+    return datetime(now.year, now.month, now.day)
+
+
 def try_modBus_variable(variable):
     try:
         result = inverter.get(variable)
@@ -40,6 +46,9 @@ def modbusAccess():
     while True:
         immediate_results = {var: try_modBus_variable(
             var) for var in vars_immediate}
+
+        immediate_results['day_start'] = get_day_start()
+
         clientMQTT.publish(topic="huawei/node/solar",
                            payload=json.dumps(immediate_results), qos=1, retain=False)
         log.info('🚀 Publishing immediate results...')
