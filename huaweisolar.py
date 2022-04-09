@@ -6,7 +6,7 @@ import paho.mqtt.client
 import os
 import json
 
-version = "1.1.2"
+version = "1.1.3"
 FORMAT = (f'{version} - %(asctime)-15s %(threadName)-15s '
           '%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s')
 logging.basicConfig(format=FORMAT)
@@ -47,7 +47,9 @@ def modbusAccess():
         immediate_results = {var: try_modBus_variable(
             var) for var in vars_immediate}
 
+        log.info('✅ Obtained the results from Modbus!')
         immediate_results['day_start'] = get_day_start()
+        log.info('✅ Added the start of the day to the object!')
 
         clientMQTT.publish(topic="huawei/node/solar",
                            payload=json.dumps(immediate_results), qos=1, retain=False)
