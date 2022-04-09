@@ -6,7 +6,7 @@ import paho.mqtt.client
 import os
 import json
 
-version = "1.1.0"
+version = "1.1.1"
 FORMAT = (f'{version} - %(asctime)-15s %(threadName)-15s '
           '%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s')
 logging.basicConfig(format=FORMAT)
@@ -84,4 +84,6 @@ log.info("START MODBUS...")
 try:
     modbusAccess()
 except:
+    log.error("❌ Error! Stopping MQTT!")
     clientMQTT.loop_stop()
+    exit(1)
