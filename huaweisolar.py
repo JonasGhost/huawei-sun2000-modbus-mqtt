@@ -6,7 +6,7 @@ import paho.mqtt.client
 import os
 import json
 
-version = "1.1.3"
+version = "1.2.0"
 FORMAT = (f'{version} - %(asctime)-15s %(threadName)-15s '
           '%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s')
 logging.basicConfig(format=FORMAT)
@@ -30,6 +30,12 @@ def get_day_start():
     return str(datetime(now.year, now.month, now.day))
 
 
+def get_installation_date():
+    (year, month, day) = int(os.getenv('INSTALLATION_YEAR')), int(
+        os.getenv('INSTALLATION_MONTH')), int(os.getenv('INSTALLATION_DAY'))
+    return str(datetime(year, month, day))
+
+
 def try_modBus_variable(variable):
     try:
         result = inverter.get(variable)
@@ -49,6 +55,7 @@ def modbusAccess():
 
         log.info('✅ Obtained the results from Modbus!')
         immediate_results['day_start'] = get_day_start()
+        immediate_results['installation_date'] = get_installation_date()
         log.info('✅ Added the start of the day to the object!')
 
         clientMQTT.publish(topic="huawei/node/solar",
