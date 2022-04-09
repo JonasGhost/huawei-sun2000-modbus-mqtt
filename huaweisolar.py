@@ -6,7 +6,7 @@ import paho.mqtt.client
 import os
 import json
 
-version = "1.1.1"
+version = "1.1.2"
 FORMAT = (f'{version} - %(asctime)-15s %(threadName)-15s '
           '%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s')
 logging.basicConfig(format=FORMAT)
