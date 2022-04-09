@@ -31,6 +31,11 @@ inverter.wait = 1
 #'daily_yield_energy', 'grid_A_voltage', 'active_grid_A_current', 'power_meter_active_power',
 # 'grid_exported_energy', 'grid_accumulated_energy']
 
+vars_immediate_default = ['pv_01_voltage', 'pv_01_current', 'pv_02_voltage', 'pv_02_current', 'input_power', 'grid_voltage',
+                          'grid_current', 'active_power', 'grid_A_voltage', 'active_grid_A_current', 'power_meter_active_power', 'storage_unit_1_total_charge']
+vars_cumulative_default = ['day_active_power_peak', 'efficiency', 'internal_temperature', 'insulation_resistance', 'device_status', 'fault_code',
+                           'accumulated_yield_energy', 'daily_yield_energy', 'grid_exported_energy', 'grid_accumulated_energy']
+
 
 def try_modBus_variable(variable):
     try:
@@ -43,23 +48,22 @@ def try_modBus_variable(variable):
 
 def modbusAccess():
 
-    vars_inmediate = ['pv_01_voltage', 'pv_01_current', 'pv_02_voltage', 'pv_02_current', 'input_power', 'grid_voltage',
-                      'grid_current', 'active_power',
-                      'grid_A_voltage', 'active_grid_A_current', 'power_meter_active_power']
-
-    vars = ['day_active_power_peak', 'efficiency', 'internal_temperature', 'insulation_resistance', 'device_status', 'fault_code', 'accumulated_yield_energy',
-            'daily_yield_energy', 'grid_exported_energy', 'grid_accumulated_energy']
+    vars_immediate = ','.split(
+        os.getenv('IMMEDIATE_VARS', ','.join(vars_immediate_default)))
+    vars_cumulative = ','.split(
+        os.getenv('CUMULATIVE_VARS', ','.join(vars_cumulative_default)))
 
     cont = 0
     while True:
         immediate_results = {var: try_modBus_variable(
-            var) for var in vars_inmediate}
+            var) for var in vars_immediate}
         clientMQTT.publish(topic="huawei/node/immediate",
                            payload=json.dumps(immediate_results), qos=1, retain=False)
         log.info('🚀 Publishing immediate results...')
 
         if(cont > 5):
-            results = {var: try_modBus_variable(var) for var in vars}
+            results = {var: try_modBus_variable(
+                var) for var in vars_cumulative}
             clientMQTT.publish(topic="huawei/node/cumulative",
                                payload=json.dumps(results), qos=1, retain=False)
             log.info('🚀 Publishing cumulative results...')
