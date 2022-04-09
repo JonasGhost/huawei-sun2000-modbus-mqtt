@@ -27,7 +27,7 @@ vars_immediate_default = ['pv_01_voltage', 'pv_01_current', 'pv_02_voltage', 'pv
 
 def get_day_start():
     now = datetime.now()
-    return datetime(now.year, now.month, now.day)
+    return str(datetime(now.year, now.month, now.day))
 
 
 def try_modBus_variable(variable):
@@ -40,7 +40,6 @@ def try_modBus_variable(variable):
 
 
 def modbusAccess():
-
     vars_immediate = os.getenv('IMMEDIATE_VARS', ','.join(
         vars_immediate_default)).split(',')
 

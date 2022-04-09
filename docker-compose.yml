@@ -4,6 +4,7 @@ services:
   huaweisolar:
     container_name: huaweisolar
     build: ./
+    restart: unless-stopped
     environment:
       - INVERTER_IP=${INVERTER_IP}
       - INVERTER_PORT=${INVERTER_PORT}
