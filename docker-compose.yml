@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  huaweisolar:
+    container_name: huaweisolar
+    build: ./
+    environment:
+      - INVERTER_IP=${INVERTER_IP}
+      - INVERTER_PORT=${INVERTER_PORT}
+      - MQTT_IP=${MQTT_IP}
+      - MQTT_PORT=${MQTT_PORT}
+      - MQTT_USER=${MQTT_USER}
+      - MQTT_PASS=${MQTT_PASS}
