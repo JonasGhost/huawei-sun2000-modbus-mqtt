@@ -6,7 +6,7 @@ import paho.mqtt.client
 import os
 import json
 
-version = "1.2.0"
+version = "1.3.0"
 FORMAT = (f'{version} - %(asctime)-15s %(threadName)-15s '
           '%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s')
 logging.basicConfig(format=FORMAT)
@@ -24,6 +24,8 @@ inverter.wait = 1
 vars_immediate_default = ['pv_01_voltage', 'pv_01_current', 'pv_02_voltage', 'pv_02_current', 'input_power', 'grid_voltage',
                           'grid_current', 'active_power', 'grid_A_voltage', 'active_grid_A_current', 'power_meter_active_power', 'storage_unit_1_total_charge']
 
+immediate_results = {}
+
 
 def get_day_start():
     now = datetime.now()
@@ -37,15 +39,19 @@ def get_installation_date():
 
 
 def try_modBus_variable(variable):
+    global immediate_results
+
     try:
         result = inverter.get(variable)
         return {'value': result.value, 'unit': result.unit}
     except:
         log.warning(f"❌ Failed to get {variable}!")
-        return {'value': -1, 'unit': "?"}
+        return immediate_results[variable]
 
 
 def modbusAccess():
+    global immediate_results
+
     vars_immediate = os.getenv('IMMEDIATE_VARS', ','.join(
         vars_immediate_default)).split(',')
 
